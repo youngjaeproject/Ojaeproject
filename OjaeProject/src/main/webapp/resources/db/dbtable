@@ -1,0 +1,174 @@
+DROP TABLE MEMBER CASCADE CONSTRAINTS;
+DROP TABLE BOOKRES CASCADE CONSTRAINTS;
+DROP TABLE RROOMRES CASCADE CONSTRAINTS;
+DROP TABLE WISHBOOK CASCADE CONSTRAINTS;
+DROP TABLE VISIT CASCADE CONSTRAINTS;
+DROP TABLE EVENT CASCADE CONSTRAINTS;
+
+
+drop table bookres;		--도서예약테이블삭제
+drop table bookinfo;	--도서정보테이블삭제
+drop table rroomres;	--열람실예약테이블삭제
+drop table rroominfo;	--열람실정보테이블삭제
+drop table wishbook;	--희망도서신청테이블삭제
+drop table visit;		--견학신청테이블삭제
+drop table notice;		--공지사항테이블삭제
+drop table faq;			--FAQ(자주하는질문테이블)삭제
+drop table qna;			--QNA(문의사항테이블)삭제
+drop table member;		--회원테이블삭제
+drop table event;		--행사테이블삭제
+
+--회원테이블
+create table member(
+	id 		varchar2(15) primary key,	--아이디
+	pwd 	varchar2(15) not null,		--비밀번호
+	name 	varchar2(30) not null,		--이름
+	gender 	number  not null,			--성별
+	birth 	date not null, 				--생일
+	phone 	varchar2(20),				--전화번호
+	email 	varchar2(20) not null,		--이메일(xxxxxx@xxxx.xxx)
+	zipcode varchar2(10),				--우편번호
+	address varchar2(25),				--상세주소
+);
+
+
+drop sequence bookinfo_seq;
+create sequence bookinfo_seq;
+--도서 테이블
+create table bookinfo(
+	bi_num			number primary key,		--도서 고유번호
+	bi_name			varchar2(8) not null,	--도서명
+	bi_img			varchar2(20),			--도서이미지
+	bi_writer		varchar2(10) not null,	--작가
+	bi_publisher	varchar2(10) not null,	--출판사
+	bi_page			number,					--페이지수
+	bi_intro		varchar2(500),			--간략소개
+	bi_rec			number					--추천도서 0-아무것도아님, 1-추천
+	bi_state		number					--도서상태 0-대출예약가능, 1-대출예약대기, 2-대여중
+);
+
+drop sequence bookres_seq;
+create sequence bookres_seq;
+--도서대출예약 테이블
+create table bookres(
+	br_num		number primary key,		--도서 예약 고유번호
+	bi_num		number not null,		--도서 고유번호
+	id			varchar2(15) not null,	--도서 대여자 아이디
+	br_rdate	date					--도서 대여 예약 날짜		
+);
+alter table bookres add constraint bookres_fk1 foreign key(bi_num) references 
+bookinfo(bi_num) on delete cascade;
+alter table bookres add constraint bookres_fk2 foreign key(id) references 
+member(id) on delete cascade;
+
+drop sequence rroominfo_seq;
+create sequence rroominfo_seq;
+--열람실 좌석 테이블
+create table rroominfo(
+	ri_num		number primary key,		--열람실 좌석 고유번호(1~100)
+	ri_state		number				--도서상태 0-대출예약가능, 1-대출예약대기, 2-대여중
+);
+
+drop sequence rroomres_seq;
+create sequence rroomres_seq;
+--열람실 좌석 예약 테이블
+create table rroomres(
+	rr_num		number primary key,		--예약번호(고유키)
+	ri_num		number not null,		--열람실 번호(1~110까지)
+	id			varchar2(15) not null,	--좌석 대여자 아이디
+	ri_rdate	date					--예약날짜
+);
+alter table rroomres add constraint rroomres_fk1 foreign key(ri_num) references 
+rroominfo(ri_num) on delete cascade;
+alter table rroomres add constraint rroomres_fk2 foreign key(id) references 
+member(id) on delete cascade;
+
+drop sequence wishbook_seq;
+create sequence rroomres_seq;
+--신규도서신청
+create table wishbook(
+	wb_num			number primary key,		--희망도서번호(고유키)
+	wb_name			varchar2(15),			--도서명
+	wb_writer		varchar2(15),			--저자
+	wb_publisher	varchar2(15),			--출판사
+	id				varchar2(15) not null,	--신청한회원아이디
+	wb_rdate		date					--신청날짜
+);
+alter table wishbook add constraint wishbook_fk foreign key(id) references 
+member(id) on delete cascade;
+
+drop sequence visit_seq;
+create sequence visit_seq;
+--견학신청
+create table visit(
+   v_num number primary key,   --시퀀스
+   id varchar2(15),      --신청자
+   v_year number not null,   --견학신청일(년)
+   v_mon number not null,   --견학신청일(월)
+   v_day number not null,   --견학신청일(일)
+   v_people not null,      --견학인원
+   v_state number,      --견학상태
+);
+alter table visit add constraint visit_fk foreign key(id) references 
+member(id) on delete cascade;
+
+drop sequence notice_seq;
+create sequence notice_seq;
+--공지사항		
+create table notice(
+   n_num number primary key,   --시퀀스
+   n_title vharchar2(20),   --제목
+   n_rdate date,      --등록일
+   n_count number,      --조회수
+   n_content varchar2(50),   --내용
+   n_file varchar2(20)      --첨부파일   
+);
+
+drop sequence faq_seq;
+create sequence faq_seq;
+--faq(자주하는 질문)
+create table faq(
+   f_num number primary key,   	--시퀀스
+   f_title vharchar2(20),      	--제목
+   f_content varchar2(50)   	--내용
+);
+
+drop sequence qna_seq;
+create sequence qna_seq;
+--qna(문의사항)
+create table qna(
+   q_num number primary key,   --시퀀스
+   q_state number,      --답변현황(답변완료/대기중)
+   q_title vharchar2(20),   --제목
+   id varchar2(15),      --아이디 fk
+   q_rdate date,      --등록일 
+   q_count number      --조회수
+);
+alter table qna add constraint qna_fk foreign key(id) references 
+member(id) on delete cascade;
+
+drop sequence event_seq;
+create sequence event_seq;
+--행사
+create table event(
+   e_num number primary key,   --시퀀스
+   e_year number not null,   --행사일(년)
+   e_mon number not null,   --행사일(월)
+   e_day number not null,   --행사일(일)
+   e_name varchar2(30) not null,   --행사명
+   e_memo varchar2(40),   --비고
+);
+
+--필요한 테이블목록
+
+--회원			member
+--도서			bookinfo/bookinfo_seq
+--도서대출예약		bookres/bookres_seq		제약조건갯수2
+--열람실			rroominfo/rroominfo_seq
+--열람실예약		rroomres/rroomres_seq		제약조건갯수2
+--신규도서신청		wishbook/wishbook_seq		제약조건갯수1
+--견학신청		visit/visit_seq				제약조건갯수1
+--공지사항		notice/notice_seq
+--faq(자주하는질문)faq/faq_seq
+--qna(문의사항)	qna/qna_seq				제약조건갯수1
+--행사			event/event_seq

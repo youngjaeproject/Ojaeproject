@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions 
+PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" 
+"http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+	<definition name=".main" template="/WEB-INF/views/main/layout_main.jsp">
+		<put-attribute name="header_login" value="/WEB-INF/views/main/header_login.jsp"/>
+		<put-attribute name="header_menu" value="/WEB-INF/views/main/header_menu.jsp"/>
+		<put-attribute name="main" value="/WEB-INF/views/main/main.jsp"/>
+		<put-attribute name="footer" value="/WEB-INF/views/main/footer.jsp"/>
+	</definition>
+	<definition name=".other" template="/WEB-INF/views/main/layout_other.jsp">
+		<put-attribute name="header_login" value="/WEB-INF/views/main/header_login.jsp"/>
+		<put-attribute name="header_menu" value="/WEB-INF/views/main/header_menu.jsp"/>
+		<put-attribute name="left" value="/WEB-INF/views/main/left.jsp"/>
+		<put-attribute name="content" value="/WEB-INF/views/main/content.jsp"/>
+		<put-attribute name="footer" value="/WEB-INF/views/main/footer.jsp"/>
+	</definition>
+	
+	<!-- .user.jyp.jyp -->
+	<definition name=".*.*.*" extends=".other">
+		<put-attribute name="content" value="/WEB-INF/views/{1}/{2}/{3}.jsp"/>
+	</definition>
+	
+	<!-- 뷰 이름이 .user.items라면 
+	{1}번째 위치에 user가 설정되고 {2}번째 위치에 items가 설정된다. 
+	즉 /WEB-INF/views/user/items.jsp페이지가 설정된다. -->
+	<definition name=".*.*" extends=".other">
+		<put-attribute name="content" value="/WEB-INF/views/{1}/{2}.jsp"/>
+	</definition>
+	
+	<definition name=".*.*" extends=".main">
+		<put-attribute name="main" value="/WEB-INF/views/{1}/{2}.jsp"/>
+	</definition>
+</tiles-definitions>
